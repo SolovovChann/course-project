@@ -1,0 +1,111 @@
+@import "style";
+
+.message{
+    z-index: 10;
+    display: block;
+    text-align:  center;
+    padding: .25em 0;
+    width: 100%;
+    position: fixed;
+    left: 0; top: 0;
+    color: white;
+    transition: top @fade 5s;
+    &.debug{     background-color: rgba(pink, 0.75); }
+    &.info{      background-color: rgba(yellowgreen, 0.75); }
+    &.success{   background-color: rgba(lime, 0.75); }
+    &.warning{   background-color: rgba(gold, 0.75); }
+    &.error{     background-color: rgba(crimson, 0.75); }
+    &&:before{
+        content: "!";
+        display: inline-block;
+        background-color: white;
+        border-radius: 50%;
+        width: 1.15em;
+        text-align: center;
+        color: black;
+        font-weight: bolder;
+        margin-right: .25em;
+    }
+}
+
+.catalog{
+    display: inline-flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: stretch;
+    justify-content: center;
+    padding: 1% 0;
+    .item{
+        background-color: @fg-color;
+        border-radius: .75em;
+        flex: 0.15 0.15 15em;
+        margin: .5em;
+        padding: .1em .1em .5em .1em;
+        position: relative;
+        text-align: center;
+        transition: transform @fade;
+        @media screen and (max-width: @mobile){
+            width: 100%;
+            margin: 0 0 .5em 0;
+        }
+        &:hover{
+            .controls{ opacity: 1; }
+            img{ transform: scale(1.05);}
+        }
+        .controls{
+            z-index: 6;
+            position: absolute;
+            top: 5px; left: 0;
+            opacity: 0;
+            width: 100%;
+            display: inline-flex;
+            justify-content: space-around;
+            transition: opacity @fade;
+            @media screen and (max-width: @mobile){ display: none; }
+            a{
+                background-color: @secondary;
+                border-radius: 50%;
+                font-size: 1.5em;
+                padding: .25em;
+                text-decoration: none;
+                transition: background-color @fade;
+                user-select: none;
+                &:hover{ background-color: @positive; }
+            }
+        }
+        .imgWrapper{
+            border-radius: .5em;
+                img{
+                    @media screen and (max-width: @mobile){
+                    transform: unset;
+                }
+            }
+        }
+        .name{
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: .5em;
+        }
+        .price{
+            color: @primary;
+            font-size: larger;
+            margin-top: .5em;
+        }
+        .old{
+            color: lightgray;
+            right: 5px;
+            position: absolute;
+            text-decoration: line-through;
+        }
+        .sale{
+            background-color: @primary;
+            border-radius: 0 5em 5em 0;
+            color: white;
+            padding: .1em 2em;
+            position: absolute;
+            top: 0.5em;
+            left: 0;
+            z-index: 5;
+        }
+    }
+}

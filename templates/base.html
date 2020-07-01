@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+    <head>
+        {% load static %}
+        {% load tz %}
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{% block title %}{{ CATEGORY }}{% endblock %} | {{ SITE_NAME }}</title>
+        <!--  LOGO  -->
+        <link rel="shortcut icon" href="{% static 'img/logo.svg' %}" type="image/svg"/>
+        <!--  FONTS  -->
+            <!--  Roboto  -->
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&display=swap"/>
+            <!--  Oxanium  -->
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium|Roboto&display=swap"/>
+        <!--  ORIGIN MAIN LESS FILE  -->
+        <link rel="stylesheet" href="{% static 'css/style.less' %}" type="text/less"/>
+        <!--  CATALOG STYLESHEET  -->
+        <link rel="stylesheet" href="{% static 'css/catalog.less' %}" type="text/less"/>
+        <!--  OTHER CSS AND JS FROM OTHER PAGES  -->
+        {% block head %}{% endblock %}
+        
+    </head>
+
+
+    <body>
+    
+        <header>
+        <!--  MOBILE MENU  -->
+            <div class="mob-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        <!--  LOGO  -->
+            <a href="/" class="logo">
+                <img src="{% static 'img/logo.svg' %}" alt="logo"/>
+                <h1>{{ SITE_NAME }}</h1>
+            </a>
+
+        <!--  NAVIGATION  -->
+            <nav>
+                <a href="/" {% if CATEGORY == "Каталог" %}class="active"{% endif %}>
+                    Каталог
+                </a>
+                {% for a in PRODUCT_TYPE %}
+                    {% if a.1 == CATEGORY %}
+                        <a href = "/category/{{ a.0 }}" class="active">{{ a.1 }}</a>
+                    {% else %}
+                        <a href = "/category/{{ a.0 }}">{{ a.1 }}</a>
+                    {% endif %}
+                {% endfor %}
+                <a href="/contacts/" {% if CATEGORY == "Контакты" %}class="active"{% endif %}>
+                    Контакты
+                </a>
+            </nav>
+
+        <!--  CART  -->
+            <div class="cart_button">
+                <div class="bubble">{{ cart.len }}</div>
+                <a href="{% url 'catalog:chechout' %}">
+                🛒
+                </a>
+            </div>
+
+        <!--  FAVORITES  -->
+            <div class="favorites_buton">
+                <a href="/apps/favorites/">
+                ⭐
+                </a>
+            </div>
+
+        </header>
+
+
+        <main>
+            <div class="messages_box">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <h2>{{ CATEGORY }}</h2>
+            {% block main %}
+                <div class="catalog">
+                    {% for product in productList %}
+                        <div class = "item">
+                            <div class ="controls">
+                                <a href="{% url 'catalog:addToCart' product.id %}">🛒</a>
+                                <a href="#" title="Добавить в избранное">🤍</a>
+                                <a href="#" title="Добавить в сравнение">📊</a>
+                            </div>
+                            <div class="imgWrapper">
+                                <a href="{% url 'catalog:productDetail' product.id %}"><img src="{{ product.review.url }}"/></a>
+                            </div>
+                            <p class="name">{{ product.name }}</p>
+                            {% if product.avalible %}
+                                {% if product.sale %}
+                                    <p class="old">{{ product.price }}₽</p>
+                                    <p class="sale">–{{ product.sale }}%</p>
+                                    <p class="price">{{ product.getSale }}₽</p>
+                                {% else %}
+                                    <p class="price">{{ product.price }}</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="price">Товар временно недоступен</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endblock %}
+        </main>
+
+
+        <footer>
+            <div class="top">
+                <p>
+                    <b>Навигация</b>
+                    {% for a in PRODUCT_TYPE %}
+                        <p><a href="/category/{{ a.0 }}">{{ a.1 }}</a></p>
+                    {% endfor %}
+                    <a href="/contacts/">Контакты</a>
+                </p>
+            </div>
+            <div class="bottom">
+                © {{ SITE_NAME }}, г. 2020. Все права защищены. Designed by <a href="https://vk.com/solikchann">Solovov</a>
+            </div>
+        </footer>
+        <!--  SCRIPTS LIBS  -->
+            <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+            <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+        <!--  MAIN JS FILE  -->
+            <script src="{% static 'js/less.min.js' %}"></script>
+            {% block footer %}{% endblock %}
+    </body>
+</html>

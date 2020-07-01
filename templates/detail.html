@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/detail.less' %}" type="text/less"/>
+    <link rel="stylesheet" href="{% static 'js/slick-1.8.1/slick/slick.css' %}" type="text/less"/>
+    <link rel="stylesheet" href="{% static 'js/slick-1.8.1/slick/slick-theme.css' %}" type="text/less"/>
+{% endblock %}
+
+{% block main %}
+    <div class="detail">
+        <div class="review">
+            <img src="{{ product.review.url }}" alt="{{ product.name }}"/>
+            {% for review in product.reviews_set.all %}
+                <img src="{{ review.image.url }}" alt="{{ product.name }}"/>
+            {% endfor %}
+        </div>
+        <p class="rate">{{ product.getRating }} <span>({{ product.comment_set.count }} Оценки)<span></p>
+        {% if product.avalible %}
+            {% if product.sale %}
+                <p class="old">{{ product.price }}₽</p>
+                <p class="price">{{ product.getSale }}₽</p>
+            {% else %}
+                <span class="price">{{ product.price }}</span>
+            {% endif %}
+        {% else %}
+            <p class="price">Товар временно недоступен</p>
+        {% endif %}
+        <div class="buyPanel">
+            <form action="{% url 'catalog:addToCart' product.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="{{ product.id }}" name="productId"/>
+                <div class="amount">
+                    <p class="minus" onclick="minusOne()" title="Меньше">–</p>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.on_stock }}" title="Количество товара"/>
+                    <p class="plus" onclick="addOne()" title="Больше">+</p>
+                </div>
+                <input class="buyButton" type="submit" value="В корзину"/>
+            </form>
+        </div>
+        {% if product.description %}
+            <h2>Описание</h2>
+            <div class="description">
+            {{ product.description }}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="feedback">
+        <h2>Отзывы</h2>
+        <h2><a class="open_spoiler">Оставить комментарий</a></h2>
+        <form class="commentForm" action="{% url 'catalog:leaveComment' product.id %}" method="POST">
+            {% csrf_token %}
+            {{ commentForm }}
+            <input class="sendForm" type="submit" value="Отправить">
+        </form>
+        {% for comment in product.comment_set.all %}
+            <div class="comment">
+                <div class="data">
+                    <p class="name">{{ comment.authorName }}</p>
+                    <p><span class="pubDate">{{ comment.pubDate }}</span></p>
+                    <p class="rate">{{ comment.getRate }}</p>
+                    <p class="text">{{ comment.text }}</p>
+                </div>
+                <div class="commentRating">
+                    <a href="{% url 'catalog:rateComment' product.id comment.id 'upvote' %}" title="Нравится">👍</a>
+                    <span class="rating"> {{ comment.getCommentRating }} </span>
+                    <a href="{% url 'catalog:rateComment' product.id comment.id 'downvote' %}" title="Не нравится">👎</a>
+                </div>
+            </div>
+            {% empty %}
+                <p class='empty'>Отзывов пока нет</p>
+        {% endfor %}
+        
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <script src="{% static 'js/slick-1.8.1/slick/slick.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/detail.js' %}"></script>
+{% endblock %}

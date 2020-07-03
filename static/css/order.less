@@ -1,0 +1,69 @@
+@import 'style.less';
+
+.form{
+    width: 35%;
+    margin: auto;
+    background-color: @fg-color;
+    border-radius: 1.5em;
+    padding: 1.5em;
+    @media screen and (max-width: @mobile){
+        width: 100%;
+        border-radius: 0;
+        background-color: transparent;
+    }
+    
+    p{
+        margin-bottom: 1em;
+        label{
+            display: block;
+        }
+        input, textarea, select{
+            width: 100%;
+            background-color: transparent;
+            border: 0;
+            padding: .25em .5em;
+            font-size: larger;
+            transition: border-color @fade;
+            border-bottom: 1px solid white;
+            &:focus{
+                border-color: @secondary;
+                outline: none;
+            }
+        }
+        select{
+            &::before{
+                color: #FFF;
+                content: '↑';
+                font-size: 2em;
+                position: absolute;
+                right: 20px;
+                top: calc(50% - 0.5em);
+            }
+            &:focus{
+                background-color: @secondary;
+                color: black;
+            }
+        }
+        textarea{
+            min-width: 100%;
+            max-width: 100%;
+            min-height: 2em;
+            max-height: 5em;
+        }
+    }
+    .buyButton{
+        display: block;
+        margin: auto;
+
+    }
+}
+.result{
+    box-shadow: @box-shadow;
+    font-size: larger;
+    font-weight: bolder;
+    @media screen and (max-width: @mobile){
+        text-align: center;
+        color: lightgray;
+
+    }
+}

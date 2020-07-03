@@ -17,17 +17,17 @@ class product(models.Model):
     name     = models.CharField('Название', max_length=30, null=False, blank=False)
     price    = models.FloatField('Цена', null=False, blank=False)
     sale     = models.IntegerField('Скидка (указывать в процентах)', null=True, blank=True)
-    review   = models.ImageField('Превью', upload_to='product', null=False, blank=False)
+    image   = models.ImageField('Превью', upload_to='product', null=False, blank=False)
     on_stock = models.PositiveIntegerField('Доступно на складе')
     avalible = models.BooleanField('Доступно для покупки', default=bool(on_stock) )
     p_type   = models.CharField('Тип продукта', max_length=25, choices=PRODUCT_TYPE, null=True, blank=True)
     description = models.TextField('Описание', max_length=250, null=True, blank=True)
 
     def getSale(self):
-        if 0 < self.sale < 101:
+        if self.sale:
             return round(self.price - (self.price * (self.sale / 100)), 0)
         else:
-            return 'Ошибка! Неверно указана скидка!'
+            return self.price
     def getRating(self):
         result = 0
         if self.comment_set.all():
@@ -88,88 +88,3 @@ class characteristic(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class cart(object):
-    def __init__(self, request):
-        """
-        Инициализируем корзину
-        """
-
-        self.session = request.session
-        cart = self.session.get(settings.CART_SESSION_ID)
-
-        if not cart:
-            #   Save an empty cart in a session
-            cart = self.session[ settings.CART_SESSION_ID ] = {}
-            
-        self.cart = cart
-
-
-    def add(self, product, quantity=1, update_quantity=False):
-        """
-        Добавить продукт в корзину по его ID
-        """
-        productId = str(product.id)
-
-        if productId not in self.cart:
-            self.cart[productId] = {
-                'quantity'    : 0,
-                'price'       : product.price
-            }
-        
-        if update_quantity:
-            self.cart[productId]['quantity'] = quantity
-        else:
-            self.cart[productId]['quantity'] += quantity
-        self.save()
-
-    
-    def save(self):
-        #   Cart session update
-        self.session[settings.CART_SESSION_ID] = self.cart
-        self.session.modified = True
-
-
-    def remove(self, product):
-        """
-        Удаление товара из корзины
-        """
-
-        if str(product.id) in self.cart:
-            del self.cart[ str( product.id )]
-            self.save()
-
-
-    def __iter__(self):
-        """
-        Перебор элементов в корзине и получение продуктов из БД
-        """
-
-        product_ids = self.cart.keys()
-        #   get products
-        products = product.objects.filter( id__in=product_ids )
-        for Product in products:
-            self.cart[str(product.id)]['product'] = product
-
-        for item in self.cart.values():
-            item['price'] = Decimal(item['price'])
-            item['total'] = item['price'] * item['quantity']
-            yield item
-
-
-    def __len__(self):
-        """
-        Подсчёт всех товаров в корзине
-        """
-        return sum( item['quantity'] for item in self.cart.values())
-
-
-    
-    def get_total_price(self):
-        return sum( Decimal( item['price'] * item['quantity'] for item in self.cart.values()))
-
-
-    def clear(self):
-        del self.session[ settings.CART_SESSION_ID]
-        self.session.modified = True

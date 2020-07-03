@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cart_tag %}
 
 {% block title %}Корзина{% endblock title %}
 
@@ -10,7 +11,33 @@
 {% block main %}
 
 <div class="cart">
+    {% for key, value in request.session.cart.items %}
+        <div class="item">
+        
+            <p class="item_clear"><a href="{% url 'cart:item_clear' value.product_id %}" title="Удалить из корзины">×</a></p>
+            <img src="{{ value.image }}">
+
+            <div class='data'>
+                <p class="name">{{ value.name }}</p>
+                
+                <div class="amount">
+                    <a href="{% url 'cart:item_increment' value.product_id %}" title="Добавить еденицу товара">+</a>
+                    <input type="number" min=1 max=10 step=1 value="{{ value.quantity }}"/>
+                    <a href="{% url 'cart:item_decrement' value.product_id %}" title="Убрать еденицу товара">-</a>
+                </div>
     
+                <p class="total"><b>Всего:</b>  {{ value.price|multiply:value.quantity }}₽</p>
+            </div>
+
+        </div>    
+    {% empty %}
+        <p class="empty">Пока что тут пусто, добавьте что-нибудь в корзину</p>
+{% endfor %}
+{% if request.session.cart.items|length > 0 %}
+    <p>Всего: {{ request.session.cart|length }} позиция(и) на общую сумму {{ cart_total_amount }}₽</p>
+    <a href="{% url 'cart:cart_clear' %}">Очистить корзину</a>
+    <a href="{% url 'order:home' %}" class='buyButton'>Оформить заказ</a>
+{% endif %}
 </div>
 
 {% endblock main %}

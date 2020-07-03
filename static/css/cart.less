@@ -1,25 +1,49 @@
 @import 'style';
 
 .cart{
-    width: 100%;
+    width: 50%;
+    margin: auto;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-
+    @media screen and (max-width: @mobile){
+        width: 100%;
+    }
     .item{
+        background-color: @fg-color;
+        border-radius: .5em;
         color: white;
+        margin-bottom: .5em;
+        position: relative;
         @media screen and (max-width: @mobile){
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .item_clear{
+            background-color: @primary;
+            border-radius: 50%;
+            left: 5px;
+            padding: 0 .5em;
+            position: absolute;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color @fade;
+            top: 5px;
+            &:hover{ background-color: @positive; }
+            a{
+                text-decoration: none;
+                color: @text-color;
+                font-size: x-large;
+            }
+        }
+        .data{
+            padding: .5em 1.5em;
         }
         img{
             width: 25em;
             float: left;
             margin-right: .5em;
-            @media screen and (max-width: @mobile){
-                width: 35%;
-            }
-        }
-        .buyPanel{
-            width: unset;
         }
         .name{
             font-weight: bold;
@@ -29,16 +53,18 @@
             font-weight: lighter;
             font-size: large;
         }
+            
     }
-}
-.summary{
-    margin-top: 1.5em;
+    .total{ margin: .5em 0; }
     .buyButton{
         @media screen and (max-width: @mobile){
             width: 100%;
         }
         display: block;
-        margin-top: 1em;
+        margin-top: 1.25em;
         padding: .25em .5em;
     }
+}
+.summary{
+    margin-top: 1.5em;
 }

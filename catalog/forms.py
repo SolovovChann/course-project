@@ -1,4 +1,4 @@
-from .models        import product, comment, cart
+from .models        import product, comment
 from django         import forms
 from django.forms   import ModelForm, NumberInput, HiddenInput
 

@@ -24,6 +24,7 @@
 
 //  Main settings
 *{
+    box-sizing: border-box;
     color: @text-color;
     margin: 0;
     overflow-x: hidden;
@@ -147,6 +148,38 @@ nav{
     }
 }
 
+.cart_button{
+    position: relative;
+    padding: .25em .5em;
+    background-color: @negative;
+    font-size: larger;
+    border-radius: .25em;
+    transition: background-color @fade;
+    @media screen and (max-width: @mobile){
+        padding: 0;
+        background-color: transparent;
+        a{
+            *:not(.cart-emoji){ display: none; }
+        }
+    }
+    &:hover{
+        background-color: @positive;
+    }
+    a{
+        color: @text-color;
+        text-decoration: none;
+        .bubble{
+            position: absolute;
+            top: 0;
+            left: 1.5em;
+            background-color: @primary;
+            padding: .15em .5em;
+            font-size: small;
+            border-radius: 50%;
+        }
+    }
+}
+
 //  Оболочка изображения для корректной работы на мобилках
 .imgWrapper{
     display: block;
@@ -169,9 +202,11 @@ nav{
     border: 1px solid @text-color;
     color: @text-color;
     cursor: pointer;
+    display: inline-block;
     font-size: larger;
+    max-width: 15em;
     font-weight: lighter;
-    padding: 0 1.75em;
+    padding: .75em 1.75em;
     text-align: center;
     text-decoration: none;
     transition: border-color @fade, color @fade;
@@ -194,10 +229,14 @@ nav{
     justify-content: space-around;
     padding: .5em 0;
     &:hover{ border-color: @secondary; }
-    p{
+    a{
+        color: @text-color;
         cursor: pointer;
+        display: block;
         padding: .1em;
         text-align: center;
+        font-size: large;
+        text-decoration: none;
         user-select: none;
         width: 100%;
         &:hover{ color: @secondary;}
@@ -290,6 +329,12 @@ nav{
         width: 20px;
     }
 }
+
+.empty{
+    text-align: center;
+    color: lightgray;
+}
+
 #search-trigger{
     cursor: pointer;
 }
@@ -342,6 +387,7 @@ nav{
         width: 100%;
         color: @text-color;
         transition: top @fade 5s;
+        cursor: pointer;
         &.info{      background-color: rgba(yellowgreen, 0.75); }
         &.success{   background-color: rgba(lime, 0.75); }
         &.warning{   background-color: rgba(gold, 0.75); }

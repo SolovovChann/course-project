@@ -10,7 +10,7 @@
 {% block main %}
     <div class="detail">
         <div class="review">
-            <img src="{{ product.review.url }}" alt="{{ product.name }}"/>
+            <img src="{{ product.image.url }}" alt="{{ product.name }}"/>
             {% for review in product.reviews_set.all %}
                 <img src="{{ review.image.url }}" alt="{{ product.name }}"/>
             {% endfor %}
@@ -27,16 +27,7 @@
             <p class="price">Товар временно недоступен</p>
         {% endif %}
         <div class="buyPanel">
-            <form action="{% url 'catalog:addToCart' product.id %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" value="{{ product.id }}" name="productId"/>
-                <div class="amount">
-                    <p class="minus" onclick="minusOne()" title="Меньше">–</p>
-                    <input type="number" name="quantity" value="1" min="1" max="{{ product.on_stock }}" title="Количество товара"/>
-                    <p class="plus" onclick="addOne()" title="Больше">+</p>
-                </div>
-                <input class="buyButton" type="submit" value="В корзину"/>
-            </form>
+            <a href="{% url 'cart:cart_add' product.id %}" class="buyButton">В корзину</a>
         </div>
         {% if product.description %}
             <h2>Описание</h2>

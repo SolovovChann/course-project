@@ -11,9 +11,6 @@ SECRET_KEY = os.environ.get( 'SECRET_KEY', 'sj+jzi#w&y1_7$wlj7$(t6@f2q-16*^l@$+s
 
 DEBUG = os.environ.get( 'DEBUG', True )
 
-#   The key, used to storage cart in a user's session
-CART_SESSION_ID = 'cart'
-
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'solvovchann.pythonanywhere.com',
@@ -23,6 +20,7 @@ ALLOWED_HOSTS = [
 
 # Application definition
 INSTALLED_APPS = [
+    'cart',
     'catalog',
     'grappelli',
     'order',
@@ -34,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+#   The key, used to storage cart in a user's session
+CART_SESSION_ID = 'cart'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,6 +53,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'cart.context_processor.cart_total_amount',
                 'django.template.context_processors.request',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

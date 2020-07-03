@@ -1,11 +1,13 @@
-from .forms             import commentForm
-from .models            import product, comment, PRODUCT_TYPE, cart
-from django.conf        import settings
-from django.conf        import settings
-from django.contrib     import messages
-from django.http        import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts   import render, reverse, get_list_or_404, get_object_or_404
-from django.utils       import timezone
+from .forms                         import commentForm
+from .models                        import product, comment, PRODUCT_TYPE
+from cart.cart                      import Cart
+from django.conf                    import settings
+from django.contrib                 import messages
+from django.contrib.auth.decorators import login_required
+from django.http                    import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts               import render, reverse, get_list_or_404, get_object_or_404, redirect
+from django.utils                   import timezone
+
 
 def productDetail(request, productId):
     query = get_object_or_404(product, id = int(productId))
@@ -64,19 +66,3 @@ def rateComment(request, productId, commentId, vote):
     messages.success(request, 'Комментарий успешно добавлен')
     request.session.modified = True
     return HttpResponseRedirect(reverse('catalog:productDetail', args=[productId]))
-
-
-def addToCart(request, productId):
-    CART = cart(request)
-    prod = get_object_or_404(product, pk=productId)
-    if request.POST.get('quantity'):
-        quantity = int(request.POST.get('quantity'))
-    else:
-        quantity = 1
-    CART.add(product=prod, quantity=quantity, update_quantity=True)
-    return HttpResponseRedirect( 'catalog:checkout' )
-
-
-def checkout(request):
-    return render(request, 'cart.html', 
-    { 'SITE_NAME' : settings.SITE_NAME, 'CATEGORY' : 'Корзина',  'PRODUCT_TYPE' : PRODUCT_TYPE, })

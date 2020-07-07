@@ -52,7 +52,6 @@ body{
     }
 }
 header{
-    align-items: center;
     background-color: @fg-color;
     box-shadow: @box-shadow;
     display: inline-flex;
@@ -148,13 +147,38 @@ nav{
     }
 }
 
-.cart_button{
-    position: relative;
-    padding: .25em .5em;
+.btn-inline{
     background-color: @negative;
-    font-size: larger;
     border-radius: .25em;
+    color: @text-color;
+    cursor: pointer;
+    display: inline-block;
+    font-size: larger;
+    padding: .25em .75em;
+    position: relative;
+    text-decoration: none;
     transition: background-color @fade;
+    &:hover{
+        background-color: @positive;
+        color: white;
+    }
+}
+
+.btn-cart{
+    position: relative;
+    a{
+        color: @text-color;
+        text-decoration: none;
+        .bubble{
+            position: absolute;
+            top: 0;
+            left: 2em;
+            background-color: @primary;
+            padding: .15em .5em;
+            font-size: small;
+            border-radius: 50%;
+        }
+    }
     @media screen and (max-width: @mobile){
         padding: 0;
         background-color: transparent;
@@ -162,24 +186,7 @@ nav{
             *:not(.cart-emoji){ display: none; }
         }
     }
-    &:hover{
-        background-color: @positive;
-    }
-    a{
-        color: @text-color;
-        text-decoration: none;
-        .bubble{
-            position: absolute;
-            top: 0;
-            left: 1.5em;
-            background-color: @primary;
-            padding: .15em .5em;
-            font-size: small;
-            border-radius: 50%;
-        }
-    }
 }
-
 //  Оболочка изображения для корректной работы на мобилках
 .imgWrapper{
     display: block;

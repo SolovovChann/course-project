@@ -58,7 +58,7 @@
             </nav>
 
         <!--  CART  -->
-            <div class="cart_button">
+            <div class="btn-inline btn-cart">
                  <a href="{% url 'cart:cart_detail' %}">
                     <span class="cart-emoji">🛒</span>
                     {% if request.session.cart|length > 0 %}
@@ -67,6 +67,11 @@
                         <span>Корзина</spa>
                     {% endif %}
                 </a>
+            </div>
+
+         <!-- USER -->
+            <div class="signin">
+                <a href="" class="btn-inline">Войти</a>
             </div>
 
         </header>

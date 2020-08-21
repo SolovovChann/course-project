@@ -1,0 +1,39 @@
+*{
+    scroll-behavior: smooth;
+}
+.top-nav-collapse{
+    background-color: rgba(255, 255, 255, 0.75);
+}
+.message-container{
+    width: 100%;
+    position: fixed;
+    z-index: 1040;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+}
+.message-container .message{
+    box-shadow: 0 0 5px 0 black;
+    color: black;
+    margin-bottom: .5em;
+    display: block;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    user-select: none;
+}
+.message.primary{
+    background-color: var(--primary);
+}
+.message.info{
+    background-color: var(--info);
+}
+.message.success{
+    background-color: var(--success);
+}
+.message.warning{
+    background-color: var(--warning);
+}
+.message.danger{
+    background-color: var(--danger);
+}

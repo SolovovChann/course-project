@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+{% endblock style %}
+
+{% block header %}
+{% endblock header %}
+
+{% block main %}
+    <h2 class="text-center pt-5 mt-4">Привет, {{ user.username }}</h2>
+
+    <section>
+        <div class="row">
+        
+            <div class="col-md-3">
+                <div class="view overlay z-depth-1 rounded-circle">
+                    <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="img img-fluid">
+                </div>
+            </div>
+
+            <div class="col-md-9">
+
+                <table>
+                    <tr>
+                        <th class="pr-1 font-weight-bold">Фамилия:</th>
+                        <td class="text-left">{{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="pr-1 font-weight-bold">Имя:</th>
+                        <td class="text-left">{{ user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="pr-1 font-weight-bold">Адрес электронной почты:</th>
+                        <td class="text-left">{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="pr-1 font-weight-bold">Адрес доставки:</th>
+                        <td class="text-left">{{ profile.adress }}</td>
+                    </tr>
+                    <tr>
+                        <th class="pr-1 font-weight-bold">Почтовый индекс:</th>
+                        <td class="text-left">{{ profile.post_index }}</td>
+                    </tr>
+                </table>
+
+                <a href="{% url 'user:edit' %}" class="btn btn-default mx-0"><i class="fas fa-cog mr-1"></i>Настроить профиль</a>
+            </div>
+        </div>
+    </section>
+{% endblock main %}
+
+{% block script %}
+{% endblock script %}

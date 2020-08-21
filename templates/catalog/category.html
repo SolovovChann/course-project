@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+{% endblock style %}
+
+{% block main %}
+    <section class="text-center mb-4">
+
+    <h2 class="text-center"><a name="catalog">Каталог</a></h2>
+
+    <!--Navbar-->
+      <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
+
+        <!-- Navbar brand -->
+        <span class="navbar-brand">Категории:</span>
+
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav" aria-controls="basicExampleNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+
+          <!-- Links -->
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link mr-1" href="/">Всё
+                <span class="sr-only">(текущая)</span>
+              </a>
+            </li>
+            {% for item in PRODUCT_TYPE %}
+                <li class="nav-item{% if TITLE == item.verbose %} active{% endif %}">
+                    <a class="nav-link mx-1" href="{% url 'category' item.name %}#catalog">{{ item.plural }}</a>
+                </li>
+            {% endfor %}
+          </ul>
+          <!-- Links -->
+
+          <form class="form-inline">
+            <div class="md-form my-0">
+              <input class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Search" name="query">
+            </div>
+          </form>
+        </div>
+        <!-- Collapsible content -->
+
+      </nav>
+      <!--/.Navbar-->
+      {% if catalog %}
+      <div class="row wow fadeIn">
+      
+        <!-- Catalog -->
+          {% for item in catalog %}
+          <div class="col-lg-3 col-md-6 mb-4">
+            <!-- Card -->
+            <div class="card">
+                <!-- Imgae -->
+                <div class="view overlay">
+                  <img src="{{ item.image.url  }}" class="img-fluid" alt="{{ item.name }}">
+                  <a href="{% url 'catalog:detail' item.id %}">
+                    <div class="mask rgba-white slight"></div>
+                  </a>
+                </div>
+                <!-- Content -->
+                <div class="card-body text-center">
+                  <a href="{% url 'category' item.product_type.name %}" class="text-grey">{{ item.product_type.verbose }}</a>
+
+                  <a href="{% url 'catalog:detail' item.id %}" class="grey-text ">
+                    <h5>{{ item.name }}</h5>
+                  </a>
+
+                  {% if item.sale %} <h6 class="text-grey"><del>{{ item.price }}</del> &#8381;</h6>{% endif %}
+                  <h4 class="font-weight-bold primary-text">{{ item.get_price|floatformat:2 }} &#8381;
+                  {% if item.sale %} <span class="badge red z-depth-1 ml-1 rounded-pill">-{{ item.sale }}%</span> {% endif %}</h4>
+                </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+      {% else %}
+        <div class="text-mute text-center">
+          Продуктов нет
+      </div>
+      {% endif %}
+      
+    </section>
+{% endblock main %}
+
+{% block script %}
+{% endblock script %}

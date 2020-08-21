@@ -1,12 +1,9 @@
-from .                          import views
-from django.conf                import settings
-from django.conf.urls.static    import static
-from django.urls                import path, include
+from django.urls    import path, include
+from . import views
 
 app_name = 'catalog'
 
 urlpatterns = [
-    path('<str:productId>/', views.productDetail, name='productDetail'),
-    path('<str:productId>/leaveComment/', views.leaveComment, name='leaveComment'),
-    path('<str:productId>/ratecomment/<str:commentId>/<str:vote>', views.rateComment, name='rateComment'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('detail/<int:product_id>/', views.detail, name='detail'),
+    path('leavecomment/<int:product_id>', views.leave_comment, name='leave_comment'),
+]

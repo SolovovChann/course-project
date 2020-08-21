@@ -1,0 +1,6 @@
+.round-right{
+    border-radius: 50% 0 0 50%;
+}
+.round-left{
+    border-radius: 0 50% 50% 0;
+}

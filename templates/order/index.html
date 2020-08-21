@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block main %}
+{% load static %}
+{% load cart_tag %}
+
+<section class="mt-5 pt-5">
+    <form action="{% url 'order:makeorder' %}" method="POST" class="col-md-8 border border-light p-md-3 m-auto">
+        <h2 class=" text-center">{{ TITLE }}</h2>
+
+        {% csrf_token %}
+
+        <div class="md-form form-group">
+            <label for="fio">ФИО</label>
+            <input type="text"
+                id="fio"
+                name="fio"
+                required
+                value="{{ user.last_name }} {{ user.first_name }}"
+                class="form-control my-2"
+                >
+        </div>
+
+        <div class="md-form form-group">
+            <label for="address">Адрес доставки</label>
+            <input type="text"
+                id="address"
+                name="address"
+                required
+                value="{{ profile.address }}"
+                class="form-control my-2"
+            >
+        </div>
+
+        <div class="md-form form-group">
+            <label for="post_code">Почтовый код</label>
+            <input type="text"
+                id="post_code"
+                name="post_code"
+                required
+                value="{{ profile.post_code }}"
+                class="form-control my-2"
+            >
+        </div>
+
+        <h2>Заказ на общую сумму: <b>{{ cart_total_amount }}&#8381;</b></h2>
+        <div class="text-center">
+            <button type="submit" href="{% url 'order:makeorder' %}" class="btn btn-success m-auto">Оформить заказ</button>
+        </div>
+    </form>
+</section>
+{% endblock main %}

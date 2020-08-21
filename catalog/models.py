@@ -1,90 +1,116 @@
-from decimal                import Decimal
-from django.conf            import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db              import models
-import math
+from django.contrib.auth.forms import User
+from django.db          import models
+from django.shortcuts   import get_list_or_404
+from django.conf        import settings
 
-PRODUCT_TYPE = (
-    ('gamepad' , 'Контроллеры'),
-    ('accessory'  , 'Аксессуары'),
-    ('keyboard'   , 'Клавиатуры'),
-    ('mouse'      , 'Мыши'),
-    ('headset'    , 'Гарнитуры'),
-)
+
+class product_type(models.Model):
+    verbose = models.CharField('Название', max_length=75)
+    plural  = models.CharField('Название мн. ч', max_length=75)
+    name    = models.CharField('Название исп. для ссылок', max_length=50)
+
+    class Meta:
+        verbose_name = 'Тип продукта'
+        verbose_name_plural = 'Типы продуктов'
+
+    def __str__(self):
+        return self.verbose
 
 
 class product(models.Model):
-    name     = models.CharField('Название', max_length=30, null=False, blank=False)
-    price    = models.FloatField('Цена', null=False, blank=False)
-    sale     = models.IntegerField('Скидка (указывать в процентах)', null=True, blank=True)
-    image   = models.ImageField('Превью', upload_to='product', null=False, blank=False)
-    on_stock = models.PositiveIntegerField('Доступно на складе')
-    avalible = models.BooleanField('Доступно для покупки', default=bool(on_stock) )
-    p_type   = models.CharField('Тип продукта', max_length=25, choices=PRODUCT_TYPE, null=True, blank=True)
-    description = models.TextField('Описание', max_length=250, null=True, blank=True)
+    name            = models.CharField('Название', max_length=30, null=False, blank=False)
+    description     = models.TextField('Описание', max_length=250, null=True, blank=True)
+    price           = models.FloatField('Цена', null=False, blank=False)
+    sale            = models.PositiveIntegerField('Скидка (указывать в процентах)', null=True, blank=True)
+    image           = models.ImageField('Превью', upload_to='product', null=False, blank=False, default='default.png')
+    on_stock        = models.PositiveIntegerField('Доступно на складе')
+    avalible        = models.BooleanField('Доступно для покупки', default=bool(on_stock))
+    product_type    = models.ForeignKey(product_type, verbose_name='Тип продукта', on_delete=models.CASCADE)
 
-    def getSale(self):
-        if self.sale:
-            return round(self.price - (self.price * (self.sale / 100)), 0)
-        else:
-            return self.price
-    def getRating(self):
-        result = 0
-        if self.comment_set.all():
-            for a in self.comment_set.all():
-                result += a.rate
-            return math.ceil(result / self.comment_set.count()) * '🌝' + (5 - math.ceil(result / self.comment_set.count())) * '🌚'
-        else:
-            return 5 * '🌚'
-    def __str__(self):
-        return self.name
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
 
+    def __str__(self):
+        return self.name
 
-class reviews(models.Model):
-    product     = models.ForeignKey(product, on_delete=models.CASCADE)
-    image       = models.ImageField('Изображение', upload_to='product', null=False)
+    def get_price(self):
+        if self.sale:
+            if 0 < self.sale < 100:
+                return round(self.price - (self.price * (self.sale / 100)), 2)
+            else:
+                return 0
+        else:
+            return self.price
+
+    def get_rate(self):
+        if self.comment_set.all():
+            result = [a.rate for a in self.comment_set.all()]
+            return self.comment_set.all().rate / self.comment_set.count()
+    
+    def was_bought(self, amount):
+        if self.on_stock >= amount:
+            self.on_stock -= amount
+            if self.on_stock == 0:
+                self.avalible = False
+        else: raise ValueError
+
+        
+
+
+class thumbnail(models.Model):
+    product = models.ForeignKey(product, verbose_name='Продукт', on_delete=models.CASCADE)
+    image   = models.ImageField('Изображение', upload_to='thumbnail')
+
+    class Meta:
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
 
     def __str__(self):
-        return self.product.name
+        return self.product
+
+
+class paramether(models.Model):
+    name = models.CharField('Название', max_length=50)
+    units = models.CharField('Еденицы измерения', max_length=10)
+    
     class Meta:
-        verbose_name = 'Превью'
-        verbose_name_plural = 'Превью'
+        verbose_name = 'Параметр'
+        verbose_name_plural = 'Параметры'
+
+    def __str__(self):
+        return self.name
+
+
+class characteristic(models.Model):
+    product = models.ForeignKey(product, verbose_name='Продукт', on_delete=models.CASCADE)
+    paramether = models.ForeignKey(paramether, verbose_name='Параметр', on_delete=models.CASCADE)
+    value   = models.CharField('Значение параметра', max_length=150)
+
+    class Meta:
+        verbose_name = 'Характеристика'
+        verbose_name_plural = 'Характеристики'
+
+    def __str__(self):
+        return str(self.value)
 
 
 class comment(models.Model):
-    product     = models.ForeignKey(product, on_delete=models.CASCADE)
-    rate        = models.PositiveIntegerField('Оценка', null=False, blank=False, validators=[MaxValueValidator(5)])
-    authorName  = models.CharField('Имя автора', max_length=50)
-    text        = models.TextField('Текст комментария')
-    pubDate     = models.DateTimeField('Дата оставления комметнария', auto_now=True)
-    likes       = models.PositiveIntegerField('Лайки', null=False, blank=False, default=0)
-    dsilikes    = models.PositiveIntegerField('Дислайки', null=False, blank=False, default=0)
+    product = models.ForeignKey(product, verbose_name='Продукт', on_delete=models.CASCADE)
+    author  = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    text    = models.CharField('Текст комментария', max_length=150)
+    date    = models.DateField('Дата оставления заказа', auto_now=True)
+    rate    = models.SmallIntegerField('Оценка')
 
-    def getCommentRating(self):
-        result = self.likes - self.dsilikes
-        return result
-
-    def __str__(self):
-        return self.authorName
-    def getRate(self):
-        return self.rate * '🌝' + (5 - self.rate) * '🌚'
-        
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
-
-class characteristic(models.Model):
-    product     = models.ForeignKey(product, on_delete=models.CASCADE)
-    parameter   = models.CharField('Параметр', max_length=50)
-    value       = models.CharField('Значение', max_length=120)
-
-    class Meta:
-        verbose_name = ('Характеристика')
-        verbose_name_plural = ('Характеристики')
-
     def __str__(self):
-        return self.name
+        return str(self.product)
+
+    def get_star_bright(self):
+        return range(self.rate)
+
+    def get_star_dusk(self):
+        return range(5 - self.rate)

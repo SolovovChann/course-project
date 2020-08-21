@@ -1,7 +1,10 @@
-from .models        import order
-from django         import forms
+from .models    import order
+from django     import forms
+from user.models import UserProfile
 
-class orderForm(forms.ModelForm):
+
+class MakeOrderForm(forms.ModelForm):
+    
     class Meta:
-        model = order
-        fields = ( 'fio', 'phone', 'email', 'address' )
+        model = UserProfile
+        fields = ['address', 'phone', 'post_index']

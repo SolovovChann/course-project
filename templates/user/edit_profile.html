@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+{% endblock style %}
+
+{% block main %}
+
+<h2 class="mt-5 pt-4 text-center">Изменение информации профиля</h2>
+<section class="col-md-8 m-auto">
+    <p class="text-muted text-center">Функция находится в разработке</p>
+<!--
+    <form action="{% url 'user:edit_profile' %}" method="POST" class="text-center border border-light p-md-3">
+
+        {% csrf_token %}
+
+        <h3>Основная информация</h3>
+        <div class="md-form form-group">
+            <label for="second_name">Фамилия</label>
+            <input type="text" 
+                class="form-control mb-2"
+                id="second_name"
+                maxlength="30"
+                name="second_name"
+                required
+                value="{{ user.last_name }}">
+        </div>
+
+        <div class="md-form form-group">
+            <label for="first_name">Имя</label>
+            <input type="text"
+                class="form-control my-2"
+                id="first_name"
+                maxlength="150"
+                name="first_name"
+                required
+                value="{{ user.first_name }}">
+        </div>
+
+        <div class="md-form form-group">
+            <label for="email">Адрес электронной почты</label>
+            <input type="email"
+                class="form-control my-2"
+                id="email"
+                name="email"
+                required
+                value="{{ user.email }}">
+        </div>
+        
+
+
+        <h3 class="mt-5">Дополнительная информация</h3>
+
+        <div class="custom-file">
+            <input type="file"
+                class="custom-file-input my-2"
+                name="avatar"
+                id="avatar">
+            <label class="custom-file-label" for="avatar">Аватар</label>
+        </div>
+
+
+        <div class="md-form">
+            <label for="">Адрес доставки</label>
+            <input type="text"
+                class="form-control"
+                id="adress"
+                maxlength="256"
+                name="adress"
+            >
+        </div>
+
+        <div class="md-form">
+            <label for="">Телефон</label>
+            <input type="text"
+                class="form-control"
+                id="phone"
+                maxlength="256"
+                name="phone"
+            >
+        </div>
+
+        <div class="md-form">
+            <label for="post_index">Почтовый индекс</label>
+            <input type="text"
+                class="form-control mt-2"
+                id="post_index" 
+                maxlength="6"
+                name="post_index"
+                value="{{ profile.post_index }}">
+        </div>
+
+        <button type="submit" class="btn btn-success mt-5"><i class="far fa-save mr-1"></i>Сохранить</button>
+    </form>
+-->
+    <div class="text-center">
+        <a href="{% url 'user:del_profile' %}" class="btn btn-danger"><i class="fas fa-trash mr-1"></i>Удалить профиль</a>
+    </div>
+</section>
+
+{% endblock main %}
+
+{% block script %}
+    <script src="{% static 'js/jquery.maskedinput.min.js' %}"></script>
+    <script>
+        $('#phone').mask('+7(999)-999-99-99', { autoclear : false, placeholder : 'X' });
+    </script>
+{% endblock script %}

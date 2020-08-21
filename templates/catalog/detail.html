@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock style %}
+
+{% block header %}
+{% endblock header %}
+
+{% block main %}
+    <div class="row mt-5 pt-5">
+        
+        <!-- Column -->
+        <div class="col-xl-6">
+            <div class="view overlay">
+            
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+        </div>
+
+        <!-- Column -->
+        <div class="col-xl-6">
+            <h2>{{ product.name }}</h2>
+
+            <div class="">
+                {{ product.description }}
+            </div>
+
+            <hr class="my-3">
+
+            <p class="">
+                <del class="text-center">{{ product.price }}</del>
+            </p>
+
+            <div class="font-weight-bold display-4">
+                
+                <span class="badge badge-primary">{{ product.get_price }} &#8381;</span>
+                {% if product.sale %}
+                    <span class="badge red z-depth-1 mr-1"> -{{ product.sale }}%</span>
+                {% endif %}
+            </div>
+
+            {% if product.characteristic_set.all %}
+                <div class="mt-2">
+                    <h3>Характеристики</h3>
+                    <div>
+                        {% for item in product.characteristic_set.all %}
+                            <p class="mb-2">
+                                <b>{{ item.paramether.name }}:</b> {{ item.value }} {{ item.paramether.units }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <hr class="my-3">
+
+            {% if product.avalible %}
+                <div class="">
+                    <a class="btn btn-primary" href="{% url 'cart:cart_add' product.id %}">Добавить в корзину</a>
+                </div>
+            {% else %}
+                <button type="button" class="btn btn-primary" disabled>Продукта нет на складе</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="mt-2">
+        <h2 class="text-center">Отзывы</h2>
+
+        <hr class="my-3">
+
+        {% if request.user.is_authenticated %}
+            <form action="{% url 'catalog:leave_comment' product.id %}" method="POST" class="">
+
+                {% csrf_token %}
+
+                <div class="radio-group">
+                    <div class="item">
+                        <input type="radio" name="rate" class="custom-radio" value="1" required id="radio-1">
+                        <label for="radio-1"><i class="fa fa-star red-text"></i></label>
+                    </div>
+                    <div class="item">
+                        <input type="radio" name="rate" class="custom-radio" value="2" required id="radio-2">
+                        <label for="radio-2"><i class="fa fa-star orange-text"></i></label>
+                    </div>
+                    <div class="item">
+                        <input type="radio" name="rate" class="custom-radio" value="3" required id="radio-3">
+                        <label for="radio-3"><i class="fa fa-star yellow-text"></i></label>
+                    </div>
+                    <div class="item">
+                        <input type="radio" name="rate" class="custom-radio" value="4" required id="radio-4">
+                        <label for="radio-4"><i class="fa fa-star green-text"></i></label>
+                    </div>
+                    <div class="item">
+                        <input type="radio" name="rate" class="custom-radio" value="5" required id="radio-5">
+                        <label for="radio-5"><i class="fa fa-star text-primary"></i></label>
+                    </div>
+                </div>
+                <textarea name="text" id="comment" class="form-control md-form rate-slider show-trigger" maxlength='2048'placeholder="Напишите комментарий"></textarea>
+                
+                <button class="btn btn-danger ml-0"type="reset show-class">Отмена</button>
+                <button class="btn btn-primary mr-0" type="submit show-class">Отправить</button>
+            </form>
+        {% endif %}
+
+        <div class="d-flex flex-column">
+
+            {% for item in product.comment_set.all %}
+                <div class="py-2">
+                    <h3 class="">{{ item.author }}</h3>
+
+                    <time class="text-muted font-weight-light">{{ item.date }}</time>
+
+                    <p>
+                        {% for i in item.get_star_bright  %}
+                            <i class="fa fa-star text-primary"></i>
+                        {% endfor %}                        
+                        {% for i in item.get_star_dusk %}
+                            <i class="fa fa-star grey-text"></i>
+                        {% endfor %}
+                    </p>
+
+                    <p>{{ item.text }}</p>
+                </div>
+
+            {% empty %}
+                <p class="text-muted text-center">Отзывов пока что нет</p>
+            {% endfor %}
+
+        </div>
+    </section>
+   
+{% endblock main%}
+
+{% block script %}
+{% endblock script %}

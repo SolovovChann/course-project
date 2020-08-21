@@ -1,0 +1,46 @@
+.show-class{ display: none; }
+.show-trigger:focus + .show-class{ display: block; }
+
+textarea{
+    min-height: 3em;
+    max-height: 15em;
+}
+
+.radio-group{
+    letter-spacing: 0;
+    display: inline-block;
+    border: 1px solid #ced4da;
+    border-radius: 1.5em;
+}
+.radio-group .item{
+    display: inline-block;
+    letter-spacing: 0;
+    margin: 0;
+}
+.item label{
+	cursor: pointer;
+	padding: 0px 15px;
+    display: inline-block;
+    margin-bottom: 0;
+    user-select: none;
+    background: white;
+    color: #495057;
+    transition: all .5s ease;
+}
+.item:first-child label{
+    letter-spacing: normal;
+    border-radius: 1.5em 0 0 1.5em;
+} .item:last-child label{
+    border-radius: 0 1.5em 1.5em 0;
+}
+.item input[type=radio].custom-radio{
+    display: none;
+}
+.item input[type=radio].custom-radio:checked + label {
+    background: var(--primary);
+    color: white;
+}
+.item input[type=radio].custom-radio:disabled + label {
+	background: #efefef;
+	color: #666;
+}

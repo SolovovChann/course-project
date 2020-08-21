@@ -1,140 +1,326 @@
 <!DOCTYPE html>
-
+{% load static %}
 <html lang="ru">
-    <head>
-        {% load static %}
-        {% load tz %}
-        {% load cart_tag %}
-        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>{% block title %}{{ CATEGORY }}{% endblock %} | {{ SITE_NAME }}</title>
-        <!--  LOGO  -->
-        <link rel="shortcut icon" href="{% static 'img/logo.svg' %}" type="image/svg"/>
-        <!--  FONTS  -->
-            <!--  Roboto  -->
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&display=swap"/>
-            <!--  Oxanium  -->
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium|Roboto&display=swap"/>
-        <!--  ORIGIN MAIN LESS FILE  -->
-        <link rel="stylesheet" href="{% static 'css/style.less' %}" type="text/less"/>
-        <!--  CATALOG STYLESHEET  -->
-        <link rel="stylesheet" href="{% static 'css/catalog.less' %}" type="text/less"/>
-        <!--  OTHER CSS AND JS FROM OTHER PAGES  -->
-        {% block head %}{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- Title -->
+    <title>{{ TITLE }} | {{ SITE_NAME }}</title>
+    <!-- Icon -->
+    <link rel="icon" href="{% static 'img/icon.svg' %}" type="image/x-icon">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- MDBootstrap -->
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Custom css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block style %}{% endblock style %}
+</head>
+<body>
+    <a name="top"></a>
+
+        <!-- Messages -->
+        <div class="message-container">
+            {% for message in messages %}
+                <div class="message{% if message.tags %} {{ message.tags }} {% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Project Start -->
         
-    </head>
-
-
-    <body>
-    
-        <header>
-        <!--  MOBILE MENU  -->
-            <div class="mob-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
-        <!--  LOGO  -->
-            <a href="/" class="logo">
-                <img src="{% static 'img/logo.svg' %}" alt="logo"/>
-                <h1>{{ SITE_NAME }}</h1>
-            </a>
-
-        <!--  NAVIGATION  -->
-            <nav>
-                <a href="/" {% if CATEGORY == "Каталог" %}class="active"{% endif %}>
-                    Каталог
-                </a>
-                {% for a in PRODUCT_TYPE %}
-                    {% if a.1 == CATEGORY %}
-                        <a href = "/category/{{ a.0 }}" class="active">{{ a.1 }}</a>
-                    {% else %}
-                        <a href = "/category/{{ a.0 }}">{{ a.1 }}</a>
-                    {% endif %}
-                {% endfor %}
-                <a href="/contacts/" {% if CATEGORY == "Контакты" %}class="active"{% endif %}>
-                    Контакты
-                </a>
-            </nav>
-
-        <!--  CART  -->
-            <div class="btn-inline btn-cart">
-                 <a href="{% url 'cart:cart_detail' %}">
-                    <span class="cart-emoji">🛒</span>
-                    {% if request.session.cart|length > 0 %}
-                        <span class="bubble">{{ request.session.cart|length }}</span> <span>{{ cart_total_amount }}₽</span>
-                    {% else %}
-                        <span>Корзина</spa>
-                    {% endif %}
-                </a>
-            </div>
-
-         <!-- USER -->
-            <div class="signin">
-                <a href="" class="btn-inline">Войти</a>
-            </div>
-
-        </header>
-
-        <main>
-            <div class="messages_box">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="message {{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <h2>{{ CATEGORY }}</h2>
-            {% block main %}
-                <div class="catalog">
-                    {% for product in productList %}
-                        <div class = "item">
-                            <div class ="controls">
-                                <a href="{% url 'cart:cart_add' product.id %}">🛒</a>
-                            </div>
-                            <div class="imgWrapper">
-                                <a href="{% url 'catalog:productDetail' product.id %}"><img src="{{ product.image.url }}"/></a>
-                            </div>
-                            <p class="name">{{ product.name }}</p>
-                            {% if product.avalible %}
-                                {% if product.sale %}
-                                    <p class="old">{{ product.price }}₽</p>
-                                    <p class="sale">–{{ product.sale }}%</p>
-                                    <p class="price">{{ product.getSale }}₽</p>
-                                {% else %}
-                                    <p class="price">{{ product.price }}</p>
-                                {% endif %}
-                            {% else %}
-                                <p class="price">Товар временно недоступен</p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+        {% if user.is_authenticated == False %}
+            <!-- Auth form -->
+            <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Войти</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            {% endblock %}
-        </main>
+                <div class="modal-body mx-3">
+                    <form action="{% url 'user:login' %}" method="POST" id="loginform">
 
+                        {% csrf_token %}
 
-        <footer>
-            <div class="top">
+                        <div class="md-form mb-4">
+                        <i class="fa fa-user prefix grey-text"></i>
+                        <input type="text" id="defaultForm-email" name="username" class="form-control validate px-1">
+                        <label data-error="wrong" data-success="right" for="defaultForm-email">Логин</label>
+                        </div>
+
+                        <div class="md-form mb-4">
+                        <i class="fas fa-key prefix grey-text"></i>
+                        <input type="password" id="defaultForm-pass" name="password" class="form-control validate px-1">
+                        <label data-error="wrong" data-success="right" for="defaultForm-pass">Пароль</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer d-flex flex-column justify-content-center">
+                    <button class="btn btn-default" type="submit" form="loginform">Войти</button>
+                    <p>Нет аккаунта? <a href="{% url 'user:register' %}" class=" ">Зарегестрироваться</a></p>
+                    <p><a href="" class="">Забыли пароль?</a></p>
+                </div>
+                </div>
+            </div>
+            </div>
+        {% endif %}
+
+        <header>
+
+            <nav class="navbar navbar-expand-lg navbar-light fixed-top scrolling-navbar">
+                <div class="container">
+
+                <!-- Brand -->
+                <a class="navbar-brand waves-effect px-2" href="/">
+                    <strong class="text-primary">{{ SITE_NAME }}</strong>
+                </a>
+
+                <!-- Collapse -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Links -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <!-- Left -->
+                    <ul class="navbar-nav mr-auto">
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Каталог</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/#catalog">Всё</a>
+                                {% if PRODUCT_TYPE %}
+                                    <div class="dropdown-divider"></div>
+                                    {% for item in PRODUCT_TYPE %}
+                                        <a href="{% url 'category' item.name %}#catalog" class="dropdown-item">{{ item.plural }}</a>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item mx-2">
+                            <a class="nav-link waves-effect" href="/#benefits">Преимущества</a>
+                        </li>
+                        <li class="nav-item ml-2">
+                            <a class="nav-link waves-effect" href="/#about">Информация</a>
+                        </li>
+                    </ul>
+
+                    <!-- Right -->
+                    <ul class="navbar-nav nav-flex-icons">
+                        <li class="nav-item mr-1">
+                            <a class="nav-link waves-effect" href="{% url 'cart:home' %}">
+                                {% if request.session.cart|length > 0 %}
+                                    <span class="badge red z-depth-1 mr-1"> {{ request.session.cart|length }} </span>
+                                {% endif %}
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="clearfix d-none d-sm-inline-block">
+                                {% if cart_total_amount %}
+                                    {{ cart_total_amount|floatformat:2 }}
+                                {% else %}
+                                    Корзина
+                                {% endif %}
+                                </span>
+                            </a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown ml-1">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user mr-1 text-primary"></i>Привет, {{ user.username }}</a>
+                                <div class="dropdown-menu p-0">
+                                    <a class="dropdown-item" href="{% url 'user:home' %}"><i class="fa fa-user mr-1"></i>Моя страница</a>
+                                    <a href="{% url 'user:my_orders' %}" class="dropdown-item"><i class="fas fa-list mr-1"></i> Мои заказы</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{% url 'user:logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Выйти</a>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="nav-item mx-1">
+                                <a class="nav-link waves-effect" data-toggle="modal" data-target="#modalLoginForm"><i class="fa fa-user mr-1 text-primary"></i>Войти</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    <!-- Search form -->
+                    <form class="form-inline" action="{% url 'search' %}" method="POST">
+                        <div class="md-form my-0">
+                            {% csrf_token %}
+                            <input class="form-control mr-sm-2" type="text" name="query" placeholder="Поиск" aria-label="Search">
+                        </div>
+                    </form>
+                </div>
+
+                </div>
+            </nav>
+        {% block header %}{% endblock header %}
+    </header>
+
+    <div class=""></div>
+
+    <main style="min-height: 61vh">
+        <div class="container">
+        {% block main %}
+        {% endblock main %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer font-small primary-color-dark">
+
+        <div class="d-flex justify-content-center py-3 bg-primary mb-2 z-depth-1">
+            <a href="https://vk.com/" class="mr-3">
+                <i class="fab fa-vk mx-2"></i>
+            </a>
+            <a href="https://youtube.com/" class="mx-3">
+                <i class="fab fa-youtube mx-2"></i>
+            </a>
+            <a href="https://facebook.com" class="mx-3">
+                <i class="fab fa-facebook mx-2"></i>
+            </a>
+            <a href="https://twitter.com" class="mx-3">
+                <i class="fab fa-twitter mx-2"></i>
+            </a>
+            <a href="https://instagram.com" class="mx-3">
+                <i class="fab fa-instagram mx-2"></i>
+            </a>
+            <a href="https://github.com" class="ml-3">
+                <i class="fab fa-github mx-2"></i>
+            </a>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="container-fluid text-center text-md-left">
+
+        <!-- Grid row -->
+        <div class="row">
+
+            <!-- Grid column -->
+            <div class="col-md-6 mt-md-0 mt-3">
+
+                <!-- Content -->
+                <h5 class="text-uppercase">Информация</h5>
+
                 <p>
-                    <b>Навигация</b>
-                    {% for a in PRODUCT_TYPE %}
-                        <p><a href="/category/{{ a.0 }}">{{ a.1 }}</a></p>
-                    {% endfor %}
-                    <a href="/contacts/">Контакты</a>
+                    Курсовой проект студента группы ПИ 17-2 Соловьёва Никиты. 
+                    <br>
+                    Во время выполнения работы были использованы средства:
                 </p>
+
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="https://bootstrap-4.ru" class="">
+                        <i class="fab fa-bootstrap mr-2"></i>
+                        Bootstrap 4
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://jquery.com" class="">
+                        <i class="fab fa-js mr-2"></i>
+                        jQuery
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://fontawesome.com" class="">
+                        <i class="fab fa-font-awesome-flag mr-2"></i>
+                        Font Awesome
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://popper.js.org" class="">
+                        <i class="fa fa-comment mr-2"></i>
+                        Popper JS
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://mdbootstrap.com" class="">
+                        <i class="fab fa-mdb mr-2"></i>
+                        Matherial Design Bootstrap
+                        </a>
+                    </li>
+                </ul>
+
             </div>
-            <div class="bottom">
-                © {{ SITE_NAME }}, г. 2020. Все права защищены. Designed by <a href="https://vk.com/solikchann">Solovov</a>
+            <!-- Grid column -->
+
+            <hr class="clearfix w-100 d-md-none pb-3">
+
+            <!-- Grid column -->
+            <div class="col-md-3 mb-md-0 mb-3">
+
+                <!-- Links -->
+                <h5 class="text-uppercase">Ссылки</h5>
+
+                <ul class="list-unstyled">
+                    <li class="">
+                        <a class="waves-effect py-1" href="#">Главная
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a class="waves-effect py-1" href="">Каталог</a>
+                    </li>
+                    <li class="">
+                        <a class="waves-effect py-1" href="">Преимущества</a>
+                    </li>
+                    <li class="">
+                        <a class="waves-effect py-1" href="">Информация</a>
+                    </li>
+                </ul>
+
             </div>
-        </footer>
-        <!--  SCRIPTS LIBS  -->
-            <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
-            <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
-        <!--  MAIN JS FILE  -->
-            <script src="{% static 'js/less.min.js' %}"></script>
-            {% block footer %}{% endblock %}
-    </body>
+
+            <div class="col-md-3 mb-md-0 mb-3">
+                <h5 class="text-uppercase">Контакты</h5>
+
+                <ul class="list-unstyled">
+                    <li>
+                        <i class="fa fa-home mr-1"></i> ул. Луначарского, 24, Пермь, Пермский край, 614000
+                    </li>
+                    <li>
+                        <i class="fa fa-phone mr-1"></i> +7(800)-55-53-535
+                    </li>
+                    <li>
+                        <i class="fa fa-envelope mr-1"></i> coolwebdev@gmail.com
+                    </li>
+                </ul>
+            </div>
+            <!-- Grid column -->
+
+            </div>
+            <!-- Grid row -->
+
+        </div>
+        <!-- Footer Links -->
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">©{{ SITE_NAME }}, Г. 2020. Все права защищены.
+            <a href="https://vk.com/solikchann/" class="">Designed by Solovov</a>
+        </div>
+        <!-- Copyright -->
+
+    </footer>
+    <!-- Footer -->
+    <!-- End project -->
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+    <script>
+        $('.message').click(function(){ $(this).slideUp(); });
+    </script>
+    {% block script %}{% endblock script %}
+</body>
 </html>

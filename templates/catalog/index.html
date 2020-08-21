@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" type="text/css">
+{% endblock style %}
+
+{% block header %}
+  <!--Carousel Wrapper-->
+<div class="container">
+  <div id="carousel" class="carousel slide carousel-fade" data-ride="carousel">
+    <!--Indicators-->
+    <ol class="carousel-indicators">
+      <li data-target="#carousel" data-slide-to="0" class="active"></li>
+      <li data-target="#carousel" data-slide-to="1"></li>
+      <li data-target="#carousel" data-slide-to="2"></li>
+    </ol>
+    <!--/.Indicators-->
+    <!--Slides-->
+    <div class="carousel-inner" role="listbox">
+      <div class="carousel-item active">
+        <div class="view">
+          <img class="d-block img-fluid" src="{% static 'img/carousel/pexels-jeshootscom-442576.jpg' %}"
+            alt="Photo by JESHOOTS.com from Pexels">
+          <div class="mask rgba-white-light"></div>
+        </div>
+        <div class="carousel-caption">
+          <h3 class="h3-responsive">Dualshock 4</h3>
+          <p>Новое поступление геймпадов Dualshock 4 для Sony PS4.</p>
+          <a href="#" class="btn btn-default">Купить</a>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <!--Mask color-->
+        <div class="view">
+          <img class="d-block img-fluid" src="{% static 'img\carousel\pexels-pixabay-371924.jpg' %}"
+            alt="Photo by Pixabay from Pexels">
+          <div class="mask rgba-white-light"></div>
+        </div>
+        <div class="carousel-caption">
+          <h3 class="h3-responsive">Nintendo Switch</h3>
+          <p>Новое поступление насадок на джойконы для Nintendo Switch</p>
+          <a href="#" class="btn btn-default">Купить</a>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <!--Mask color-->
+        <div class="view">
+          <img class="d-block img-fluid" src="{% static 'img\carousel\pexels-garrett-morrow-682933.jpg' %}"
+            alt="Photo by Garrett Morrow from Pexels">
+          <div class="mask rgba-white-light"></div>
+        </div>
+        <div class="carousel-caption">
+          <h3 class="h3-responsive">Насадки на Dualshock 4</h3>
+          <p>В продаже появились насадки красного, жёлтого и синего цвета</p>
+          <a href="#" class="btn btn-default">Купить</a>
+        </div>
+      </div>
+    </div>
+    <!--/.Slides-->
+    <!--Controls-->
+    <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+    <!--/.Controls-->
+  </div>
+  <!--/.Carousel Wrapper-->
+</div>
+{% endblock header %}
+
+{% block main %}
+
+
+  <section class="text-center mb-4 wow">
+
+    <h2 class="text-center"><a name="catalog">Каталог</a></h2>
+
+    <!--Navbar-->
+      <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
+
+        <!-- Navbar brand -->
+        <span class="navbar-brand">Категории:</span>
+
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav" aria-controls="basicExampleNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+
+          <!-- Links -->
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link mr-1" href="/">Всё
+                <span class="sr-only">(текущая)</span>
+              </a>
+            </li>
+            {% for item in PRODUCT_TYPE %}
+                <li class="nav-item{% if TITLE == item.verbose %} active{% endif %}">
+                    <a class="nav-link mx-1" href="{% url 'category' item.name %}">{{ item.plural }}</a>
+                </li>
+            {% endfor %}
+          </ul>
+          <!-- Links -->
+
+          <form class="form-inline" action="{% url 'search' %}" method="POST">
+            <div class="md-form my-0">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2" type="text" name="query" placeholder="Поиск" aria-label="Search">
+            </div>
+        </form>
+        </div>
+        <!-- Collapsible content -->
+
+      </nav>
+      <!--/.Navbar-->
+
+        <!-- Catalog -->
+          {% if catalog %}
+            <div class="row">
+            {% for item in catalog %}
+            <div class="col-lg-3 col-md-6 mb-4">
+              <!-- Card -->
+              <div class="card">
+                  <!-- Imgae -->
+                  <div class="view overlay">
+                    <img src="{{ item.image.url  }}" class="img-fluid" alt="{{ item.name }}">
+                    <a href="{% url 'catalog:detail' item.id %}">
+                      <div class="mask rgba-white slight"></div>
+                    </a>
+                  </div>
+                  <!-- Content -->
+                  <div class="card-body text-center">
+                    <a href="{% url 'category' item.product_type.name %}" class="text-grey">{{ item.product_type.verbose }}</a>
+
+                    <a href="{% url 'catalog:detail' item.id %}" class="grey-text ">
+                      <h5>{{ item.name }}</h5>
+                    </a>
+
+                    {% if item.avalible %}
+                      {% if item.sale %} <h6 class="text-grey"><del>{{ item.price }}</del> &#8381;</h6>{% endif %}
+                      <h4 class="font-weight-bold primary-text">{{ item.get_price|floatformat:2 }} &#8381;
+                      {% if item.sale %} <span class="badge red z-depth-1 ml-1 rounded-pill">-{{ item.sale }}%</span> {% endif %}</h4>
+                    {% else %}
+                      <h4 class="font-weight-bold primary-text">Нет на складе</h4>
+                    {% endif %}
+                  </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+          <div class="text-mute text-center">
+            Продуктов нет
+          </div>
+          {% endif %}
+    </section>
+
+    
+  <!-- Section benefits -->
+
+  <section class="mb-4 wow fadeIn">
+    <h2 class="text-center"><a name="benefits">Преимущества</a></h2>
+
+    <div class="row align-items-stretch">
+
+      <div class="col-md-6 py-4 mb-5">
+        <div class="d-flex justify-content-start align-items-center my-2">
+          <i class="fas fa-box-open text-primary h3 mr-2"></i>
+          <h3 class="">Быстрая доставка</h3>
+        </div>
+        <div class="text-grey">
+          Доставим ваш заказ по России за 12 дней
+        </div>
+      </div>
+
+      <div class="col-md-6 py-4">
+
+        <div class="d-flex justify-content-start align-items-center my-2">
+          <i class="fas fa-wallet text-primary h3 mr-2"></i>
+          <h3 class="">Самая низкая цена</h3>
+        </div>
+        <div class="text-grey">
+          Ниже чем у конкурентов
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row align-items-stretch">
+
+      <div class="col-md-6 py-4 mb-5">
+        <div class="d-flex justify-content-start align-items-center my-2">
+          <i class="fas fa-user-shield text-primary h3 mr-2"></i>
+          <h3 class="">Защита покупателей</h3>
+        </div>
+        <div class="text-grey">
+          В течении недели любой возврат без объяснения причин
+        </div>
+      </div>
+
+      <div class="col-md-6 py-4 mb-5">
+        <div class="d-flex justify-content-start align-items-center my-2">
+          <i class="fas fa-user-nurse text-primary h3 mr-2"></i>
+          <h3 class="">Отзывчивая поддержка</h3>
+        </div>
+        <div class="text-grey">
+          Поддержка работает 24/7. Отвечает в течении 5 минут
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="mb-2">
+    <h2 class="text-center"><a name="about">Информация</a></h2>
+    <!-- Info -->
+    <div id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="card">
+        <div class="card-header" role="tab" id="headingOne">
+          <h5 class="mb-0">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Доставка
+            </a>
+          </h5>
+        </div>
+
+        <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+          <div class="card-block px-2">
+            {% lorem 2 b random %}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" role="tab" id="headingTwo">
+          <h5 class="mb-0">
+            <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Оплата
+            </a>
+          </h5>
+        </div>
+
+        <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="card-block px-2">
+            {% lorem 2 b random %}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" role="tab" id="headingThree">
+          <h5 class="mb-0">
+            <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Защита покупателей
+            </a>
+          </h5>
+        </div>
+        <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="card-block px-2">
+            {% lorem 1 b random %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <p>
+      Проект является макетом настоящего онлайн магазина и не предоставляет возможности реальной покупки товаров. 
+      </p>
+      <p>
+      Все права пренадлежат их собственникам
+      </p>
+    </div>
+  </section>
+
+
+{% endblock main %}
+
+{% block srtipt %}
+    <script src="{% static 'js/index.js' %}"></script>
+    <script>
+      $('#carousel').carousel({
+        touch : true,
+      });
+    </script>
+{% endblock srtipt %}

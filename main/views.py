@@ -1,33 +1,25 @@
-from catalog.forms      import commentForm
-from catalog.models     import product, PRODUCT_TYPE
-from django.conf        import settings
-from django.contrib     import messages
-from django.http        import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts   import render, get_list_or_404, get_object_or_404, reverse
-from django.utils       import timezone
+from django.shortcuts        import render, get_list_or_404, get_object_or_404, Http404, redirect, HttpResponse
+from catalog.models          import product, product_type
+from django.contrib          import messages
+from django.contrib.postgres import search
 
 
 def home(request):
-    productList = product.objects.all()
-    return render(request, 'base.html', context={ 'SITE_NAME' : settings.SITE_NAME, 'PRODUCT_TYPE' : PRODUCT_TYPE, 'CATEGORY' : "Каталог",  'productList' : productList })
+    return render(request, 'catalog/index.html', { 'TITLE' : 'Главная страница', 'catalog' : product.objects.all() })
 
 
-def category(request, p_type):
-    productList = product.objects.filter(p_type = p_type)
-    for a in PRODUCT_TYPE:
-        if a[0] == p_type:
-            category = a[1]
-    if category:
-        return render(request, 'base.html', { 'SITE_NAME' : settings.SITE_NAME, 'PRODUCT_TYPE' : PRODUCT_TYPE, 'CATEGORY' : category, 'productList' :  productList })
-    else: return Http404('Категория не найдена!')
-
-
-def contacts(request):
-    return render(request, 'contacts.html', 
-    { 'SITE_NAME' : settings.SITE_NAME, 'PRODUCT_TYPE' : PRODUCT_TYPE, 'CATEGORY' : "Контакты" })
+def category(request, category):
+    pt = get_object_or_404(product_type, name=category)
+    result = get_list_or_404(product, product_type=pt)
+    return render(request, 'catalog/category.html', { 'TITLE' : pt.verbose, 'catalog' : result })
 
 
 def search(request):
-    results = get_list_or_404(product, name=request.GET.get("query"))
-    return render(request, 'search.html', 
-    { 'SITE_NAME' : settings.SITE_NAME, 'PRODUCT_TYPE' : PRODUCT_TYPE, 'CATEGORY' : "Результаты поиска", "results" : results })
+    query = request.POST.get('query').lower()
+
+    if query is None:
+        messages.error(request, 'Запрос пуст')
+        return redirect('home')
+    
+    result = product.objects.filter(name__contains=query)
+    return render(request, 'catalog/category.html', { 'TITLE' : 'Результаты поиска', 'catalog' : result })

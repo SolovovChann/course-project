@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart_tag %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock style %}
+
+{% block header %}{% endblock header %}
+
+{% block main %}
+    <h2 class="text-center mt-5 pt-5">Корзина</h2>
+    
+    {% if request.session.cart %}
+        <table class="table table-hover">
+            <!-- Table head -->
+            <tr>
+                <th>Название</th>
+                <th>Количество</th>
+                <th class="text-center">Цена</th>
+                <th class="text-center">Всего</th>
+                <th> </th>
+            </tr>
+            <!-- Table Body -->
+            {% for amount, product in request.session.cart.items %}
+                <tr>
+                    <td class="col-sm-8 col-md-6">
+                        <div class="media">
+                            <a href="{% url 'catalog:detail' product.product_id %}" class="thumbnail mr-1">
+                                <img src="{{ product.image }}" alt="{{ product.name }}" class="media-object" style="width: 75px; height: 72px;">
+                            </a>
+                            <div class="media-body">
+                                <h4 class="media-heading"><a href="{% url 'catalog:detail' product.product_id %}">{{ product.name }}</a></h4>
+                                <div>
+                                    Количество товара на складе: <strong class="text-success">{{ product.on_stock }} шт.</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="col-sm-1 col-md-1 text-center">
+                        <form action="{% url 'cart:item_add' product.product_id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" id="product_quantity" class="form-control" value="{{ product.quantity }}" max="{{ product.on_stock }}" min="0" required>
+                        </form>
+                    </td>
+
+                    <td class="col-sm-1 col-md-1 text-center">
+                        <strong>{{ product.price }}&#8381;</strong>
+                    </td>
+
+                    <td class="col-sm-1 col-md-1 text-center">
+                        <strong id="product_total">{{ product.price|multiply:product.quantity|floatformat:2 }}&#8381;</strong>
+                    </td>
+
+                    <td class="col-sm-1 col-md-1">
+                        <a class="btn btn-danger" href="{% url 'cart:item_clear' product.product_id %}"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            <!-- Useles for a while -->
+            <!--
+            <tr>
+                <td colspan="4">
+                    <h5>Подытог</h5>
+                </td>
+                <td class="text-right">
+                    <h5 class="font-weight-bold">{{ cart_total_amount }}&#8381;</h5>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="4">
+                    <h5>Стоимость доставки</h5>
+                </td>
+                <td class="text-right">
+                    <h5 class="font-weight-bold">228 &#8381;</h5>
+                </td>
+            </tr>
+            -->
+
+            <tr>
+                <td colspan="2">
+                    <h3>Всего</h3>
+                </td>
+                <td colspan="3" class="text-right">
+                    <h3 class="font-weight-bold" id="total">{{ cart_total_amount|floatformat:2 }} &#8381;</h3>
+                </td>
+            </tr>
+        </table>
+
+        <div class="w-100 clearfix">
+            <a class="btn btn-default float-sm-left" href="{% url 'home' %}">
+                <i class="fas fa-shopping-cart mr-2"></i>Продолжить покупки
+            </a>
+
+            <a href="{% url 'cart:cart_clear' %}" class="btn btn-danger">
+                <i class="fas fa-trash-alt mr-2"></i>Очистить корзину
+            </a>
+
+            <a class="btn btn-success float-sm-right" href="{% url 'order:home' %}">
+                Оформить заказ
+            </a>
+        </div>
+    {% else %}
+        <p class="text-muted text-center">
+            Ваша корзина пуста
+
+            <br>
+        
+            <a class="btn btn-default m-auto" href="{% url 'home' %}">
+                <i class="fas fa-shopping-cart mr-2"></i>Продолжить покупки
+            </a>
+        </p>
+    {% endif %}
+{% endblock main %}
+
+{% block script %}
+    <script>
+        
+    </script>
+{% endblock script %}

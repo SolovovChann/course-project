@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+    <h2 class="text-center mt-5 pt-4">Регистрация нового пользователя</h2>
+
+    <section>
+    
+        <form action="{% url 'user:registrate' %}" method="POST" class="text-center border border-light p-md-3 col-md-8 m-auto mb-3">
+        
+            {% csrf_token %}
+
+            <div class="md-form form-group">
+                <label for="username">Имя пользователя</label>
+                <input type="text" name="username" id="username" class="validate form-control" required>
+            </div>
+
+            <div class="md-form form-group">
+                <label for="email">Адрес электронной почты</label>
+                <input type="email" name="email" id="email" class="validate form-control" required>
+            </div>
+
+            <div class="md-form form-group">
+                <label for="password">Пароль</label>
+                <input type="password" name="password" id="password" class="validate form-control" required>
+            </div>
+
+            <div class="md-form form-group">
+                <label for="confirm">Подтвердите пароль</label>
+                <input type="password" name="confirm" id="confirm" class="validate form-control" required>
+            </div>
+
+            <div class="md-form form-group">
+                <label for="first_name">Имя</label>
+                <input type="text" name="first_name" id="first_name" class="validate form-control" required>
+            </div>
+
+            <div class="md-form form-group">
+                <label for="last_name">Фамилия</label>
+                <input type="text" name="last_name" id="last_name" class="validate form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-success m-auto">
+                <span class="fas fa-save mr-1"></span>Зарегистрироваться
+            </button>
+        </form>
+    </section>
+{% endblock main %}

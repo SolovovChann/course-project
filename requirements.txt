@@ -23,7 +23,7 @@ protobuf==3.11.2
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
 pycodestyle==2.6.0
-PyInstaller==3.5
+PyInstaller==3.6
 pyowm==2.10.0
 pyshorteners==1.0.1
 pyTelegramBotAPI==3.6.7
